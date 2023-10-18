@@ -1,0 +1,2 @@
+REPO fastapi-auth
+LOAD fastapi-auth.yaml
