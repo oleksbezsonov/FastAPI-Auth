@@ -1,0 +1,66 @@
+namespace: fastapi-auth
+fastapi-auth:
+  defines: runnable
+  metadata:
+    name: fastapi-auth
+    description: FastAPI - Auth example using JWT
+    icon: https://emojiapi.dev/api/v1/robot.svg
+  containers:
+    fastapi-auth:
+      build: .
+  services:
+    app:
+      container: fastapi-auth
+      port: 6060
+      host-port: 6060
+      publish: false
+      protocol: TCP
+      description: Main application port
+  connections:
+    mysql:
+      target: fastapi-auth/db
+      service: monk-mysql-db
+  variables:
+    server-settings.expiry:
+      env: server_settings.expiry
+      type: int
+      description: Server settings expiry
+      value: 3600
+    server-settings.app-key:
+      env: server_settings.app_key
+      type: string
+      description: Application key
+      value: '!!!SETME-USE-SECRETS!!!'
+    mysql.host:
+      env: mysql.host
+      type: string
+      description: MySQL host
+      value: <- connection-hostname("mysql")
+    mysql.username:
+      env: mysql.username
+      type: string
+      description: MySQL username
+      value: api_db
+    mysql.password:
+      env: mysql.password
+      type: string
+      description: MySQL password
+      value: '!!!SETME-USE-SECRETS!!!'
+    mysql.port:
+      env: mysql.port
+      type: int
+      description: MySQL port
+      value: <- connection-port("mysql")
+    mysql.db:
+      env: mysql.db
+      type: string
+      description: MySQL database
+      value: fastapiauth
+db:
+  defines: runnable
+  inherits: monk-mysql/db
+stack:
+  defines: group
+  members:
+    - fastapi-auth/fastapi-auth
+    - fastapi-auth/db
